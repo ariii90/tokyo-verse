@@ -1,0 +1,108 @@
+/* --- GERAL --- */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* --- CAPAS --- */
+.capas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+  z-index: 10;
+}
+
+.capa img {
+  width: 180px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  cursor: pointer;
+  transition: transform 0.3s, border 0.3s;
+}
+
+.capa img:hover {
+  transform: scale(1.05);
+  border: 2px solid gold;
+}
+
+/* --- FUNDO --- */
+.fundo {
+  position: relative;
+  width: 900px;
+  max-width: 95vw;
+  margin: 0 auto;
+}
+
+.fundo-img {
+  width: 100%;
+  display: block;
+  opacity: 0.9;
+}
+
+/* --- RUNAS --- */
+.runas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.runa {
+  position: absolute;
+  width: 12%;
+  height: auto;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.runa:hover {
+  transform: scale(1.2);
+  filter: brightness(1.3);
+}
+
+.runa.selecionada {
+  filter: brightness(1.6) drop-shadow(0 0 12px gold);
+}
+
+/* --- COORDENADAS DAS RUNAS (em círculo) --- */
+.runa[data-cor="roxa"]    { top: 18%; left: 28%; }
+.runa[data-cor="amarela"] { top: 18%; left: 72%; }
+.runa[data-cor="vermelha"]{ top: 35%; left: 87%; }
+.runa[data-cor="azul"]    { top: 65%; left: 87%; }
+.runa[data-cor="verde"]   { top: 82%; left: 72%; }
+.runa[data-cor="laranja"] { top: 82%; left: 28%; }
+.runa[data-cor="rosa"]    { top: 65%; left: 13%; }
+.runa[data-cor="branca"]  { top: 35%; left: 13%; }
+.runa {
+  width: 90px; /* ajusta o tamanho das runas */
+  height: 90px;
+  object-fit: contain;
+  position: absolute;
+  cursor: pointer;
+
+  /* quadrado com brilho */
+  background: rgba(255, 255, 255, 0.05); /* fundo transparente */
+  border-radius: 12px; /* deixa os cantos arredondados */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* brilho externo */
+  padding: 10px; /* espaço entre a runa e a borda quadrada */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* efeito ao passar o mouse */
+.runa:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
+}

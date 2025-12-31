@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokyo Verse</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+  background: url('entrada.png') no-repeat center center;
+  background-size: 97%; /* Menor zoom que 'cover', mas ainda cobre a tela */
+  background-color: black;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#botao-entrar {
+    position: absolute;
+    bottom: 60px; /* valor diminuído para descer o botão */
+    left: 46%; /* botão */
+    transform: translateX(-55%);
+    width: 315px;   /* valor aumentado */
+    height: 105px;  /* valor aumentado */
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+  }
+
+  #botao-entrar:hover {
+    outline: 2px solid rgba(255, 217, 0, 0.03);
+  }
+</style>
+</head>
+<body>
+<button id="botao-entrar" onclick="window.location.href='gameui.html'"></button>
+</body>
+</html>
+

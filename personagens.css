@@ -1,0 +1,94 @@
+body {
+  margin: 0;
+  background: url('../imagens/pergaminho.png') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Cinzel', serif;
+  color: #5a442a;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.livro {
+  width: 900px;
+  height: 600px;
+  position: relative;
+  perspective: 1500px;
+}
+
+.livro .capa {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 1s;
+  z-index: 2;
+}
+
+.livro .capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.livro.aberto .capa {
+  transform: rotateY(-180deg);
+  z-index: 0;
+}
+
+.livro .conteudo {
+  display: flex;
+  background: #fdf4dc;
+  width: 100%;
+  height: 100%;
+  border: 5px solid #8b5e3c;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: inset 0 0 20px #0003;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease-in;
+}
+
+.livro.aberto .conteudo {
+  opacity: 1;
+}
+
+.pagina-esquerda {
+  width: 40%;
+  border-right: 2px solid #c5b280;
+  padding-right: 20px;
+}
+
+.marcadores button {
+  display: block;
+  margin: 12px 0;
+  background: #bfa14a;
+  color: #442a1c;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  text-shadow: 1px 1px 1px #fff8dc;
+  box-shadow: 0 2px 6px #0002;
+  transition: background 0.3s;
+}
+
+.marcadores button:hover {
+  background: #d4bc74;
+}
+
+.pagina-direita {
+  width: 60%;
+  padding-left: 20px;
+}

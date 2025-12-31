@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Personagens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/personagens.css">
+</head>
+<body>
+  <div class="container">
+    <div class="livro" id="livro">
+      <div class="capa" onclick="abrirLivro()">
+        <img src="imagens/livro-fechado.png" alt="Livro Fechado">
+      </div>
+      <div class="conteudo" id="conteudoLivro">
+        <div class="pagina-esquerda">
+          <h2>Escolha um Personagem</h2>
+          <div class="marcadores">
+            <button onclick="mostrarInfo('Ace')">Ace</button>
+            <button onclick="mostrarInfo('Dizzy')">Dizzy</button>
+            <button onclick="mostrarInfo('Haku')">Haku</button>
+            <button onclick="mostrarInfo('Hyacine')">Hyacine</button>
+            <button onclick="mostrarInfo('Mari')">Mari</button>
+            <button onclick="mostrarInfo('Mystery')">Mystery</button>
+            <button onclick="mostrarInfo('Owen')">Owen</button>
+            <button onclick="mostrarInfo('Shadow')">Shadow</button>
+          </div>
+        </div>
+        <div class="pagina-direita" id="infoPersonagem">
+          <p>Clique em um marcador para ver as informações.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/personagens.js"></script>
+</body>
+</html>
