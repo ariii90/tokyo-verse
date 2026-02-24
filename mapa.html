@@ -1,377 +1,246 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mapa Interativo - Tokyo Verse</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#080707;
-    --ui:#2b241f;
-    --gold:#e2c075;
-  }
-  html,body{height:100%;margin:0;background:var(--bg);font-family:Inter, Arial, sans-serif;color:#eee}
-  .topbar{
-    height:56px;display:flex;align-items:center;gap:16px;padding:0 18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15));
-    box-shadow:0 2px 8px rgba(0,0,0,0.4);position:sticky;top:0;z-index:40;
-  }
-  .topbar h1{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);margin:0}
-  .controls{margin-left:auto;display:flex;gap:8px;align-items:center}
-  .btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--gold);cursor:pointer}
-  .btn:active{transform:translateY(1px)}
-  .map-wrap{height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;overflow:hidden}
-  /* viewport onde imagem fica */
-  .viewport{
-    width:100%;max-width:1400px;height:100%;background:linear-gradient(180deg, rgba(0,0,0,0.3), transparent);
-    border-radius:10px;overflow:hidden;position:relative;touch-action:none;
-  }
-
-  /* inner que será transformado (scale/translate) */
-  .map-inner{
-    position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;
-    width:100%;height:100%;
-  }
-
-  /* Imagem do mapa (100% of inner) */
-  #map{
-    display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.7));
-  }
-
-  /* marcadores */
-  .marker{
-    position:absolute;transform:translate(-50%,-100%);cursor:pointer;z-index:30;
-    display:flex;flex-direction:column;align-items:center;gap:6px;
-  }
-  .pin{
-    width:22px;height:22px;border-radius:50%;
-    background:linear-gradient(180deg,#f7e9b7,#c39f3a);
-    box-shadow:0 6px 18px rgba(195,159,58,0.2), inset 0 -2px 6px rgba(0,0,0,0.15);
-    border:2px solid rgba(255,255,255,0.12);
-  }
-  .label{
-    font-family:'Cinzel', serif;
-    background:rgba(10,8,6,0.54);padding:6px 10px;border-radius:8px;
-    color:var(--gold);font-size:13px;white-space:nowrap;
-    box-shadow:0 4px 16px rgba(0,0,0,0.5);
-    border:1px solid rgba(226,192,117,0.08);
-    transition:transform .18s ease, box-shadow .18s ease;
-    text-shadow:0 0 6px rgba(226,192,117,0.08);
-  }
-  .marker:hover .label{
-    transform:translateY(-6px) scale(1.02);
-    box-shadow:0 8px 28px rgba(194,150,50,0.28);
-    filter:drop-shadow(0 6px 12px rgba(226,192,117,0.08));
-  }
-
-  /* Modal para a região */
-  .modal{
-    position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;
-    z-index:90;opacity:0;pointer-events:none;transition:opacity .2s ease;
-  }
-  .modal.open{opacity:1;pointer-events:auto}
-  .modal-content{
-    width:90%;max-width:1000px;height:80%;background:#070606;border-radius:12px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.7);
-    display:flex;flex-direction:column;
-  }
-  .modal-header{padding:12px 16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.1));display:flex;align-items:center;justify-content:space-between}
-  .modal-body{flex:1;display:flex;align-items:center;justify-content:center;background:#080707}
-  .modal-body img{max-width:100%;max-height:100%;object-fit:contain}
-  .close-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--gold);cursor:pointer}
-
-  /* instruções no canto */
-  .hint{position:absolute;right:14px;bottom:14px;background:rgba(0,0,0,0.48);padding:8px 12px;border-radius:8px;color:#ddd;font-size:13px;border:1px solid rgba(255,255,255,0.03)}
-</style>
+  <meta charset="UTF-8">
+  <title>Mapa do Mundo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="mapa.css">
 </head>
 <body>
 
-  <div class="topbar">
-    <h1>Mapa Interativo — Tokyo Verse</h1>
-    <div style="opacity:.7;font-size:13px">Clique em uma região para ver o detalhe</div>
-    <div id="relogioMundo" style="font-size:13px;opacity:.8">
-  🕒 08:00
-</div>
+  <!-- HUD -->
+  <div id="hud">
+    <span id="relogioMundo">🕒 08:00</span>
 
-    <div class="controls">
-      <button id="zoomIn" class="btn">+</button>
-      <button id="zoomOut" class="btn">−</button>
-      <button id="reset" class="btn">Reset</button>
+    <button id="btnMenosHora">-1h</button>
+    <button id="btnMaisHora">+1h</button>
+    <button id="btnMenosMin">-10m</button>
+    <button id="btnMaisMin">+10m</button>
+
+    <button id="btnChuva">🌧 Chuva</button>
+    <button id="btnAddMarcador">➕ Marcador</button>
+    <button id="btnPersonagem">👤 Personagem</button>
+
+    <input type="color" id="seletorCor" value="#ff0000">
+  </div>
+
+  <!-- MAPA -->
+  <div id="mapa-container">
+    <div id="mapa-viewport">
+      <img id="mapa-img" src="mapa_dia.jpeg">
+      <div id="chuva-overlay"></div>
+      <div id="marcadores-layer"></div>
+
+      <!-- Adicionando os nomes das regiões -->
+      <div class="map-label falls-keep">País do Ouro</div>
+      <div class="map-label magnolia">Magnolia</div>
+      <div class="map-label tribo-do-sul">Tribo do Sul</div>
+      <div class="map-label pais-do-ouro">Falls Keep</div>
+      <div class="map-label pais-das-maquinas">País das Máquinas</div>
+      <div class="map-label pais-do-fogo">País do Fogo</div>
     </div>
   </div>
 
-  <div class="map-wrap">
-    <div class="viewport" id="viewport">
-      <div class="map-inner" id="mapInner" >
-        <!-- Troque o src abaixo pela sua imagem de mapa (mapa-principal.jpg por exemplo) -->
-        <img id="map" src="mapauniverso.jpeg" alt="Mapa Interativo">
-        <!-- marcadores serão injetados via JS -->
-      </div>
-
-      <div class="hint">Arraste para mover • Roda do mouse para dar zoom</div>
-    </div>
+  <!-- ZOOM -->
+  <div id="zoom-slider">
+    <div id="zoom-thumb"></div>
   </div>
 
-  <!-- Modal: imagem de região -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div id="modalTitle" style="font-family:'Cinzel',serif;color:var(--gold)"></div>
-        <div>
-          <button id="prevRegion" class="close-btn" style="margin-right:8px">◀</button>
-          <button id="nextRegion" class="close-btn" style="margin-right:8px">▶</button>
-          <button id="closeModal" class="close-btn">Fechar</button>
-        </div>
+  <style>
+        .map-label {
+          position: absolute;
+          color: #FFD700; /* Alterado para dourado */
+          font-size: 20px;
+          font-family: 'Cinzel', serif;
+          text-shadow: 2px 2px 4px black;
+          cursor: pointer;
+          transform-origin: top left;
+        }
+        .falls-keep {
+          top: 115%; /* Movido mais para baixo */
+          left: 15%; /* Ajustar conforme necessário */
+        }
+        .magnolia {
+          top: 30%; /* Ajustar conforme necessário */
+          left: 43%; /* Ajustar conforme necessário */
+        }
+        .tribo-do-sul {
+          top: 20%; /* Ajustar conforme necessário */
+          left: 10%; /* Ajustar conforme necessário */
+        }
+        .pais-do-ouro {
+          top: 65%; /* Ajustar conforme necessário */
+          left: 50%; /* Ajustar conforme necessário */
+        }
+        .pais-das-maquinas {
+          top: 60%; /* Ajustar conforme necessário */
+          left: 80%; /* Ajustar conforme necessário */
+        }
+        .pais-do-fogo {
+          top: 70%; /* Ajustar conforme necessário */
+          left: 10%; /* Ajustar conforme necessário */
+        }
+
+        /* Estilo para o modal de entrada de horário */
+        #time-modal {
+          display: none;
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(0, 0, 0, 0.9);
+          color: white;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          z-index: 3000;
+        }
+
+        #time-modal input {
+          margin-top: 10px;
+          padding: 5px;
+          font-size: 16px;
+          border: none;
+          border-radius: 5px;
+        }
+
+        #time-modal button {
+          margin-top: 10px;
+          padding: 5px 10px;
+          font-size: 16px;
+          background-color: #444;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        #time-modal button:hover {
+          background-color: #666;
+        }
+      </style>
+
+      <div id="time-modal">
+        <label for="time-input">Digite o novo horário (HH:MM):</label>
+        <input type="time" id="time-input">
+        <button id="set-time-btn">OK</button>
+        <button id="cancel-time-btn">Cancelar</button>
       </div>
-      <div class="modal-body">
-        <img id="modalImage" src="" alt="Região">
-      </div>
-    </div>
-  </div>
 
-<script>
+      <script>
+        let tempoMundo = { horas: 8, minutos: 0 };
+        const relogio = document.getElementById("relogioMundo");
+        const timeModal = document.getElementById("time-modal");
+        const timeInput = document.getElementById("time-input");
+        const setTimeBtn = document.getElementById("set-time-btn");
+        const cancelTimeBtn = document.getElementById("cancel-time-btn");
 
-  let tempoMundo = {
-  horas: 8,
-  minutos: 0
-};
+        // Atualizar o mapa com base no horário
+        function atualizarMapa() {
+          const horas = tempoMundo.horas;
+          const mapaImg = document.getElementById("mapa-img");
 
-const VELOCIDADE_TEMPO = 3;
+          if (horas >= 5 && horas < 12) {
+            mapaImg.src = "mapa_manha.jpeg"; // Manhã
+          } else if (horas >= 12 && horas < 18) {
+            mapaImg.src = "mapa_tarde.jpeg"; // Tarde
+          } else if (horas >= 18 || horas < 5) { // Noite das 18h às 4h59
+            mapaImg.src = "mapa_noite.jpeg"; // Noite
+          } else {
+            mapaImg.src = "mapa_madrugada.jpeg"; // Madrugada
+          }
+        }
 
-function getPeriodoDoDia(hora, minuto) {
+        // Atualizar o relógio automaticamente
+        function atualizarRelogio() {
+          tempoMundo.minutos++;
+          if (tempoMundo.minutos >= 60) {
+            tempoMundo.minutos = 0;
+            tempoMundo.horas++;
+            if (tempoMundo.horas >= 24) {
+              tempoMundo.horas = 0;
+            }
+          }
+          relogio.textContent = `🕒 ${tempoMundo.horas.toString().padStart(2, "0")}:${tempoMundo.minutos.toString().padStart(2, "0")}`;
+          atualizarMapa();
+        }
 
-  // MANHÃ: 05:31 → 06:59
-  if (
-    (hora === 5 && minuto >= 31) ||
-    (hora === 6)
-  ) {
-    return "manha";
-  }
+        setInterval(atualizarRelogio, 60000); // Atualiza a cada minuto
 
-  // DIA: 07:00 → 16:00
-  if (hora >= 7 && hora <= 16) {
-    return "dia";
-  }
+        // Abrir modal para definir horário
+        relogio.addEventListener("click", () => {
+          timeModal.style.display = "block";
+          timeInput.value = `${tempoMundo.horas.toString().padStart(2, "0")}:${tempoMundo.minutos.toString().padStart(2, "0")}`;
+        });
 
-  // TARDE: 17:00 → 18:50
-  if (
-    hora === 17 ||
-    (hora === 18 && minuto <= 50)
-  ) {
-    return "tarde";
-  }
+        // Definir novo horário
+        setTimeBtn.addEventListener("click", () => {
+          const novoHorario = timeInput.value;
+          if (novoHorario) {
+            const [horas, minutos] = novoHorario.split(":").map(Number); // Corrigido o parse do horário
+            if (!isNaN(horas) && !isNaN(minutos) && horas >= 0 && horas < 24 && minutos >= 0 && minutos < 60) {
+              tempoMundo.horas = horas;
+              tempoMundo.minutos = minutos;
+              atualizarRelogio();
+            } else {
+              alert("Por favor, insira um horário válido no formato HH:MM.");
+            }
+          }
+          timeModal.style.display = "none";
+        });
 
-  // NOITE: 18:51 → 05:30
-  return "noite";
-}
+        // Cancelar a entrada de horário
+        cancelTimeBtn.addEventListener("click", () => {
+          timeModal.style.display = "none";
+        });
 
-const mapasPorPeriodo = {
-  dia: "mapa_dia.jpeg",
-  tarde: "mapa_tarde.jpeg",
-  noite: "mapa_noite.jpeg",
-  chuva: "mapa_chuva.jpeg" // guardado pra depois 👀
-};
+        // Atualizar o relógio na inicialização
+        atualizarRelogio();
 
-function atualizarMapaPorHorario() {
-  const periodo = getPeriodoDoDia(
-    tempoMundo.horas,
-    tempoMundo.minutos
-  );
+        // Reativar eventos dos botões
+        document.getElementById("btnMenosHora").addEventListener("click", () => {
+          tempoMundo.horas = (tempoMundo.horas - 1 + 24) % 24;
+          atualizarRelogio();
+        });
 
-  const novoMapa = mapasPorPeriodo[periodo];
+        document.getElementById("btnMaisHora").addEventListener("click", () => {
+          tempoMundo.horas = (tempoMundo.horas + 1) % 24;
+          atualizarRelogio();
+        });
 
-  if (mapImg.src.includes(novoMapa)) return;
+        document.getElementById("btnMenosMin").addEventListener("click", () => {
+          tempoMundo.minutos = (tempoMundo.minutos - 10 + 60) % 60;
+          atualizarRelogio();
+        });
 
-  mapImg.src = novoMapa;
+        document.getElementById("btnMaisMin").addEventListener("click", () => {
+          tempoMundo.minutos = (tempoMundo.minutos + 10) % 60;
+          atualizarRelogio();
+        });
 
-  console.log("Mapa atualizado para:", periodo);
-}
+        document.getElementById("btnChuva").addEventListener("click", () => {
+          const overlay = document.getElementById("chuva-overlay");
+          overlay.style.display = overlay.style.display === "none" || overlay.style.display === "" ? "block" : "none";
+        });
 
+        document.getElementById("btnAddMarcador").addEventListener("click", () => {
+          const marcadoresLayer = document.getElementById("marcadores-layer");
+          const marcador = document.createElement("div");
+          marcador.style.position = "absolute";
+          marcador.style.top = "50%";
+          marcador.style.left = "50%";
+          marcador.style.width = "10px";
+          marcador.style.height = "10px";
+          marcador.style.backgroundColor = document.getElementById("seletorCor").value;
+          marcador.style.borderRadius = "50%";
+          marcador.style.transform = "translate(-50%, -50%)";
+          marcadoresLayer.appendChild(marcador);
+        });
 
-setInterval(() => {
-  const periodo = getPeriodoDoDia(
-    tempoMundo.horas,
-    tempoMundo.minutos
-  );
-
-  console.log("Período atual:", periodo);
-}, 2000);
-
-
-function avancarTempo() {
-  tempoMundo.minutos += VELOCIDADE_TEMPO;
-
-  if (tempoMundo.minutos >= 60) {
-    tempoMundo.minutos = 0;
-    tempoMundo.horas++;
-  }
-
-  if (tempoMundo.horas >= 24) {
-    tempoMundo.horas = 0;
-  }
-
-  console.log(
-    `Horário do mundo: ${tempoMundo.horas
-      .toString()
-      .padStart(2, '0')}:${tempoMundo.minutos
-      .toString()
-      .padStart(2, '0')}`
-  );
-}
-
-// a cada 20 segundos da vida real, o tempo do mundo avança
-setInterval(avancarTempo, 20000);
-
-// verifica o horário e troca o mapa a cada 2 segundos
-setInterval(atualizarMapaPorHorario, 2000);
-
-
-
-/*
-  COMO CONFIGURAR:
-  - Substitua "mapa-principal.jpg" pelo seu arquivo de mapa real.
-  - Em `regions` coloque objetos:
-      { id: 'ruinas', name: 'Ruínas Ancestrais', x: 36, y: 48, img: 'ruinas-detalhe.jpg' }
-    x e y são porcentagens (%) relativas à imagem (esquerda/top).
-  - Coloque esses arquivos de imagem no mesmo diretório (ou use caminhos).
-*/
-
-const regions = [
-  { id: 'ruinas', name: 'Ruínas Ancestrais', x: 34, y: 46, img: 'ruinas-detalhe.jpg' },
-  { id: 'templo', name: 'Templo das Runas',   x: 62, y: 28, img: 'templo-detalhe.jpg' },
-  { id: 'distrito', name: 'Distrito Arcano',   x: 20, y: 70, img: 'distrito-detalhe.jpg' }
-];
-
-const viewport = document.getElementById('viewport');
-const mapInner = document.getElementById('mapInner');
-const mapImg = document.getElementById('map');
-const combBtns = document.getElementById('combBtns'); // caso use
-let scale = 1;
-let minScale = 0.6;
-let maxScale = 3;
-let translate = {x:0,y:0};
-let isPanning = false;
-let start = {x:0,y:0};
-let origin = {x:0,y:0};
-
-// cria marcadores no mapa
-function createMarkers(){
-  regions.forEach((r, idx) => {
-    const m = document.createElement('div');
-    m.className = 'marker';
-    m.dataset.index = idx;
-    m.style.left = r.x + '%';
-    m.style.top  = r.y + '%';
-    m.innerHTML = `
-      <div class="pin"></div>
-      <div class="label">${r.name}</div>
-    `;
-    m.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openModal(idx);
-    });
-    mapInner.appendChild(m);
-  });
-}
-
-// atualiza transform da mapInner
-function updateTransform(){
-  mapInner.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${scale})`;
-}
-
-// zoom em torno do ponto (page coords)
-function zoomAt(deltaScale, pageX, pageY){
-  const rect = mapInner.getBoundingClientRect();
-  // ponto do ponteiro em relação ao elemento (px)
-  const px = pageX - rect.left;
-  const py = pageY - rect.top;
-
-  const prevScale = scale;
-  scale = Math.min(maxScale, Math.max(minScale, scale * deltaScale));
-
-  // calcula nova translate para manter o foco no mesmo ponto da imagem
-  translate.x = (translate.x - px) * (scale/prevScale) + px;
-  translate.y = (translate.y - py) * (scale/prevScale) + py;
-  updateTransform();
-}
-
-// wheel -> zoom
-viewport.addEventListener('wheel', (ev)=>{
-  ev.preventDefault();
-  const delta = ev.deltaY > 0 ? 0.92 : 1.08; // zoom out/in
-  zoomAt(delta, ev.clientX, ev.clientY);
-});
-
-// pointer events -> pan
-viewport.addEventListener('pointerdown', (ev)=>{
-  isPanning = true;
-  start.x = ev.clientX;
-  start.y = ev.clientY;
-  origin.x = translate.x;
-  origin.y = translate.y;
-  viewport.setPointerCapture(ev.pointerId);
-});
-
-viewport.addEventListener('pointermove', (ev)=>{
-  if(!isPanning) return;
-  const dx = ev.clientX - start.x;
-  const dy = ev.clientY - start.y;
-  translate.x = origin.x + dx;
-  translate.y = origin.y + dy;
-  updateTransform();
-});
-
-viewport.addEventListener('pointerup', (ev)=>{
-  isPanning = false;
-  viewport.releasePointerCapture(ev.pointerId);
-});
-viewport.addEventListener('pointercancel', ()=>{ isPanning = false; });
-
-// UI buttons
-document.getElementById('zoomIn').addEventListener('click', ()=>{ zoomAt(1.15, viewport.clientWidth/2, viewport.clientHeight/2); });
-document.getElementById('zoomOut').addEventListener('click', ()=>{ zoomAt(0.86, viewport.clientWidth/2, viewport.clientHeight/2); });
-document.getElementById('reset').addEventListener('click', ()=>{ scale = 1; translate = {x:0,y:0}; updateTransform(); });
-
-// Modal logic
-const modal = document.getElementById('modal');
-const modalImage = document.getElementById('modalImage');
-const modalTitle = document.getElementById('modalTitle');
-let currentRegionIndex = 0;
-
-function openModal(idx){
-  currentRegionIndex = idx;
-  const r = regions[idx];
-  modalImage.src = r.img; // certifique-se de ter esse arquivo
-  modalTitle.textContent = r.name;
-  modal.classList.add('open');
-}
-
-function closeModal(){ modal.classList.remove('open'); }
-
-document.getElementById('closeModal').addEventListener('click', closeModal);
-modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
-document.getElementById('prevRegion').addEventListener('click', ()=>{
-  currentRegionIndex = (currentRegionIndex - 1 + regions.length) % regions.length;
-  openModal(currentRegionIndex);
-});
-document.getElementById('nextRegion').addEventListener('click', ()=>{
-  currentRegionIndex = (currentRegionIndex + 1) % regions.length;
-  openModal(currentRegionIndex);
-});
-
-// inicialização
-createMarkers();
-updateTransform();
-
-/* DICAS:
- - Se os marcadores estiverem desalinhados quando o mapa usar object-fit:cover/contain diferente,
-   você pode ajustar o tamanho do mapInner para ser igual às dimensões reais da imagem,
-   ou converter x/y para posição relativa ao elemento real.
- - Para posicionar uma nova região, adicione ao array `regions` com x/y em porcentagem
-   (0..100). Ex.: x: 45.3, y: 22.7
- - As imagens de detalhe (r.img) podem ter resoluções altas; aqui elas são mostradas dentro do modal.
-*/
-</script>
-
-</body>
+        // Reativar botão de personagem
+        document.getElementById("btnPersonagem").addEventListener("click", () => {
+          alert("Botão de personagem clicado!");
+        });
+      </script>
+  </body>
 </html>

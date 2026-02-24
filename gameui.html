@@ -176,6 +176,18 @@
       display: block !important;
       animation: aparecerSelo 1s ease forwards;
     }
+
+    .map-label {
+      position: absolute;
+      color: white;
+      font-size: 20px;
+      font-family: 'Cinzel', serif;
+      text-shadow: 2px 2px 4px black;
+    }
+    .falls-keep {
+      top: 40%; /* Ajustar conforme necessário */
+      left: 30%; /* Ajustar conforme necessário */
+    }
   </style>
 </head>
 
@@ -218,6 +230,8 @@
     <button class="comb-btn" onclick="jogadorAtual='8'">Combinação 8</button>
   </div>
 
+  <div class="map-label falls-keep">FALLS KEEP</div>
+
   <script>
     let jogadorAtual = null;
     let escolhidas = [];
@@ -234,10 +248,88 @@
     };
 
     function mostrarRunas(jogador) {
-      jogadorAtual = jogador;
-      document.getElementById("area-runas").scrollIntoView({ behavior: 'smooth' });
-      const btns = document.getElementById("combBtns");
-      btns.classList.add("visible");
+      if (jogador === 1) {
+        jogadorAtual = jogador;
+        document.getElementById("area-runas").scrollIntoView({ behavior: 'smooth' });
+        const btns = document.getElementById("combBtns");
+        btns.classList.add("visible");
+      } else if (jogador === 2) {
+        const telaCinza = document.createElement("div");
+        telaCinza.style.position = "fixed";
+        telaCinza.style.top = "0";
+        telaCinza.style.left = "0";
+        telaCinza.style.width = "100%";
+        telaCinza.style.height = "100%";
+        telaCinza.style.backgroundColor = "black";
+        telaCinza.style.display = "flex";
+        telaCinza.style.flexDirection = "column";
+        telaCinza.style.alignItems = "center";
+        telaCinza.style.justifyContent = "center";
+        telaCinza.style.zIndex = "2000";
+
+        const mensagem = document.createElement("div");
+        mensagem.style.color = "white";
+        mensagem.style.fontSize = "24px";
+        mensagem.style.marginBottom = "20px";
+        mensagem.textContent = "Opss... parece que ainda não terminamos isso por aqui ainda";
+
+        const imgContainer = document.createElement("div");
+        imgContainer.style.display = "flex";
+        imgContainer.style.justifyContent = "center";
+        imgContainer.style.marginBottom = "20px";
+
+        const imagens = [
+          "./acegb.jpeg",
+          "./ciclopegb.jpeg",
+          "./dizzygb.jpeg",
+          "./hakugb.jpeg",
+          "./huggiegb.jpeg",
+          "./hyacinegb.jpeg",
+          "./marigb.jpeg",
+          "./owengb.jpeg",
+          "./shadowgb.jpeg"
+        ];
+        let imgIndex = 0;
+
+        const imgElement = document.createElement("img");
+        imgElement.style.width = "300px";
+        imgElement.style.height = "300px";
+        imgElement.style.objectFit = "contain";
+        imgElement.src = imagens[imgIndex];
+        imgContainer.appendChild(imgElement);
+
+        const imgCheckInterval = setInterval(() => {
+          imgIndex = (imgIndex + 1) % imagens.length;
+          const imgPath = imagens[imgIndex];
+          imgElement.src = imgPath;
+          imgElement.onerror = () => {
+            console.error(`Erro: Imagem não encontrada ou caminho incorreto: ${imgPath}`);
+            imgElement.src = "https://via.placeholder.com/300?text=Imagem+não+encontrada";
+          };
+        }, 2000);
+
+        const botaoVoltar = document.createElement("button");
+        botaoVoltar.textContent = "Voltar";
+        botaoVoltar.style.marginTop = "20px";
+        botaoVoltar.style.padding = "10px 20px";
+        botaoVoltar.style.fontSize = "18px";
+        botaoVoltar.style.color = "white";
+        botaoVoltar.style.backgroundColor = "#444";
+        botaoVoltar.style.border = "none";
+        botaoVoltar.style.borderRadius = "5px";
+        botaoVoltar.style.cursor = "pointer";
+
+        botaoVoltar.addEventListener("click", () => {
+          clearInterval(imgCheckInterval);
+          document.body.removeChild(telaCinza);
+          document.querySelector(".capas-bg").scrollIntoView({ behavior: 'smooth' });
+        });
+
+        telaCinza.appendChild(mensagem);
+        telaCinza.appendChild(imgContainer); // Adiciona o container de imagens antes do botão
+        telaCinza.appendChild(botaoVoltar);
+        document.body.appendChild(telaCinza);
+      }
     }
 
     const runas = document.querySelectorAll(".runa");

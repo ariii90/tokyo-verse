@@ -62,14 +62,32 @@ const personagensInfo = {
 };
 
 function mostrarInfo(nome) {
-  const p = personagensInfo[nome];
-  if (!p) return;
+  console.log(`Personagem selecionado: ${nome}`); // Log para depuração
 
-  document.getElementById('infoPersonagem').innerHTML = `
+  const personagem = personagensInfo[nome];
+  if (!personagem) {
+    console.error(`Personagem ${nome} não encontrado!`);
+    return;
+  }
+
+  // Atualizar imagem do personagem
+  const imagemPersonagem = document.getElementById('imagemPersonagem');
+  if (!imagemPersonagem) {
+    console.error('Elemento imagemPersonagem não encontrado!');
+    return;
+  }
+  imagemPersonagem.innerHTML = `<img src="${personagem.imagem}" alt="${nome}">`;
+
+  // Atualizar informações do personagem
+  const infoPersonagem = document.getElementById('infoPersonagem');
+  if (!infoPersonagem) {
+    console.error('Elemento infoPersonagem não encontrado!');
+    return;
+  }
+  infoPersonagem.innerHTML = `
     <h2>${nome}</h2>
-    <img src="${p.imagem}" alt="${nome}" style="width:120px; border-radius:8px;"><br>
-    <p><strong>Vida:</strong> ${p.vida} / ${p.maxVida}</p>
-    <p><strong>Força:</strong> ${p.forca}</p>
-    <p>${p.descricao}</p>
+    <p><strong>Vida:</strong> ${personagem.vida}/${personagem.maxVida}</p>
+    <p><strong>Força:</strong> ${personagem.forca}</p>
+    <p>${personagem.descricao}</p>
   `;
 }
