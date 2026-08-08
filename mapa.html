@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -6,22 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="mapa.css">
 </head>
+
 <body>
 
   <!-- HUD -->
   <div id="hud">
-    <span id="relogioMundo">🕒 08:00</span>
 
-    <button id="btnMenosHora">-1h</button>
-    <button id="btnMaisHora">+1h</button>
-    <button id="btnMenosMin">-10m</button>
-    <button id="btnMaisMin">+10m</button>
+    <div class="hud-esquerda">
+      <span id="relogioMundo">08:00</span>
 
-    <button id="btnChuva">🌧 Chuva</button>
-    <button id="btnAddMarcador">➕ Marcador</button>
-    <button id="btnPersonagem">👤 Personagem</button>
+      <button id="btnMenosHora">-1h</button>
+      <button id="btnMaisHora">+1h</button>
+      <button id="btnMenosMin">-10m</button>
+      <button id="btnMaisMin">+10m</button>
 
-    <input type="color" id="seletorCor" value="#ff0000">
+      <button id="btnChuva">🌧 Chuva</button>
+      <button id="btnAddMarcador"> Marcador</button>
+      <input type="color" id="seletorCor" value="#ff0000">
+    </div>
+
+    <div class="hud-direita">
+      <button id="btnPersonagem"> Personagem</button>
+    </div>
+
   </div>
 
   <!-- MAPA -->
@@ -31,216 +38,70 @@
       <div id="chuva-overlay"></div>
       <div id="marcadores-layer"></div>
 
-      <!-- Adicionando os nomes das regiões -->
-      <div class="map-label falls-keep">País do Ouro</div>
+      <!-- Regiões -->
+      <div class="map-label falls-keep">falls-keep</div>
       <div class="map-label magnolia">Magnolia</div>
       <div class="map-label tribo-do-sul">Tribo do Sul</div>
-      <div class="map-label pais-do-ouro">Falls Keep</div>
+      <div class="map-label pais-do-ouro">país-do-ouro</div>
       <div class="map-label pais-das-maquinas">País das Máquinas</div>
       <div class="map-label pais-do-fogo">País do Fogo</div>
     </div>
   </div>
 
-  <!-- ZOOM -->
-  <div id="zoom-slider">
-    <div id="zoom-thumb"></div>
+  <!-- VIDAS -->
+  <div id="vidas-container">
+
+    <div class="vida-player">
+      <img class="player-img" src="owen_normal.jpg" data-nome="owen">
+      <div class="vida-barra" data-vida="100">
+        <div class="vida-preenchimento"></div>
+      </div>
+    </div>
+
+    <div class="vida-player">
+      <img class="player-img" src="mari_normal.jpg" data-nome="mari">
+      <div class="vida-barra" data-vida="100">
+        <div class="vida-preenchimento"></div>
+      </div>
+    </div>
+
+    <div class="vida-player">
+      <img class="player-img" src="mizzy_normal.jpg" data-nome="mizzy">
+      <div class="vida-barra" data-vida="100">
+        <div class="vida-preenchimento"></div>
+      </div>
+    </div>
+
+    <div class="vida-player">
+      <img class="player-img" src="ace_normal.jpg" data-nome="ace">
+      <div class="vida-barra" data-vida="100">
+        <div class="vida-preenchimento"></div>
+      </div>
+    </div>
+
+  </div>
+  <img class="player-img" src="hyacine_normal.jpg" data-nome="hyacine">
+  <div class="vida-barra" data-vida="100">
+    <div class="vida-preenchimento"></div>
   </div>
 
-  <style>
-        .map-label {
-          position: absolute;
-          color: #FFD700; /* Alterado para dourado */
-          font-size: 20px;
-          font-family: 'Cinzel', serif;
-          text-shadow: 2px 2px 4px black;
-          cursor: pointer;
-          transform-origin: top left;
-        }
-        .falls-keep {
-          top: 115%; /* Movido mais para baixo */
-          left: 15%; /* Ajustar conforme necessário */
-        }
-        .magnolia {
-          top: 30%; /* Ajustar conforme necessário */
-          left: 43%; /* Ajustar conforme necessário */
-        }
-        .tribo-do-sul {
-          top: 20%; /* Ajustar conforme necessário */
-          left: 10%; /* Ajustar conforme necessário */
-        }
-        .pais-do-ouro {
-          top: 65%; /* Ajustar conforme necessário */
-          left: 50%; /* Ajustar conforme necessário */
-        }
-        .pais-das-maquinas {
-          top: 60%; /* Ajustar conforme necessário */
-          left: 80%; /* Ajustar conforme necessário */
-        }
-        .pais-do-fogo {
-          top: 70%; /* Ajustar conforme necessário */
-          left: 10%; /* Ajustar conforme necessário */
-        }
+  <!-- MODAL VIDA -->
+  <div id="vida-modal">
+    <label>Vida do personagem (0-100):</label>
+    <input type="number" id="vida-input" min="0" max="100">
+    <button id="vida-ok">OK</button>
+    <button id="vida-cancel">Cancelar</button>
+  </div>
 
-        /* Estilo para o modal de entrada de horário */
-        #time-modal {
-          display: none;
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: rgba(0, 0, 0, 0.9);
-          color: white;
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-          z-index: 3000;
-        }
+  <!-- MODAL RELÓGIO -->
+  <div id="time-modal">
+    <label for="time-input">Digite o novo horário (HH:MM):</label>
+    <input type="time" id="time-input">
+    <button id="set-time-btn">OK</button>
+    <button id="cancel-time-btn">Cancelar</button>
+  </div>
 
-        #time-modal input {
-          margin-top: 10px;
-          padding: 5px;
-          font-size: 16px;
-          border: none;
-          border-radius: 5px;
-        }
+  <script src="mapa.js"></script>
 
-        #time-modal button {
-          margin-top: 10px;
-          padding: 5px 10px;
-          font-size: 16px;
-          background-color: #444;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        #time-modal button:hover {
-          background-color: #666;
-        }
-      </style>
-
-      <div id="time-modal">
-        <label for="time-input">Digite o novo horário (HH:MM):</label>
-        <input type="time" id="time-input">
-        <button id="set-time-btn">OK</button>
-        <button id="cancel-time-btn">Cancelar</button>
-      </div>
-
-      <script>
-        let tempoMundo = { horas: 8, minutos: 0 };
-        const relogio = document.getElementById("relogioMundo");
-        const timeModal = document.getElementById("time-modal");
-        const timeInput = document.getElementById("time-input");
-        const setTimeBtn = document.getElementById("set-time-btn");
-        const cancelTimeBtn = document.getElementById("cancel-time-btn");
-
-        // Atualizar o mapa com base no horário
-        function atualizarMapa() {
-          const horas = tempoMundo.horas;
-          const mapaImg = document.getElementById("mapa-img");
-
-          if (horas >= 5 && horas < 12) {
-            mapaImg.src = "mapa_manha.jpeg"; // Manhã
-          } else if (horas >= 12 && horas < 18) {
-            mapaImg.src = "mapa_tarde.jpeg"; // Tarde
-          } else if (horas >= 18 || horas < 5) { // Noite das 18h às 4h59
-            mapaImg.src = "mapa_noite.jpeg"; // Noite
-          } else {
-            mapaImg.src = "mapa_madrugada.jpeg"; // Madrugada
-          }
-        }
-
-        // Atualizar o relógio automaticamente
-        function atualizarRelogio() {
-          tempoMundo.minutos++;
-          if (tempoMundo.minutos >= 60) {
-            tempoMundo.minutos = 0;
-            tempoMundo.horas++;
-            if (tempoMundo.horas >= 24) {
-              tempoMundo.horas = 0;
-            }
-          }
-          relogio.textContent = `🕒 ${tempoMundo.horas.toString().padStart(2, "0")}:${tempoMundo.minutos.toString().padStart(2, "0")}`;
-          atualizarMapa();
-        }
-
-        setInterval(atualizarRelogio, 60000); // Atualiza a cada minuto
-
-        // Abrir modal para definir horário
-        relogio.addEventListener("click", () => {
-          timeModal.style.display = "block";
-          timeInput.value = `${tempoMundo.horas.toString().padStart(2, "0")}:${tempoMundo.minutos.toString().padStart(2, "0")}`;
-        });
-
-        // Definir novo horário
-        setTimeBtn.addEventListener("click", () => {
-          const novoHorario = timeInput.value;
-          if (novoHorario) {
-            const [horas, minutos] = novoHorario.split(":").map(Number); // Corrigido o parse do horário
-            if (!isNaN(horas) && !isNaN(minutos) && horas >= 0 && horas < 24 && minutos >= 0 && minutos < 60) {
-              tempoMundo.horas = horas;
-              tempoMundo.minutos = minutos;
-              atualizarRelogio();
-            } else {
-              alert("Por favor, insira um horário válido no formato HH:MM.");
-            }
-          }
-          timeModal.style.display = "none";
-        });
-
-        // Cancelar a entrada de horário
-        cancelTimeBtn.addEventListener("click", () => {
-          timeModal.style.display = "none";
-        });
-
-        // Atualizar o relógio na inicialização
-        atualizarRelogio();
-
-        // Reativar eventos dos botões
-        document.getElementById("btnMenosHora").addEventListener("click", () => {
-          tempoMundo.horas = (tempoMundo.horas - 1 + 24) % 24;
-          atualizarRelogio();
-        });
-
-        document.getElementById("btnMaisHora").addEventListener("click", () => {
-          tempoMundo.horas = (tempoMundo.horas + 1) % 24;
-          atualizarRelogio();
-        });
-
-        document.getElementById("btnMenosMin").addEventListener("click", () => {
-          tempoMundo.minutos = (tempoMundo.minutos - 10 + 60) % 60;
-          atualizarRelogio();
-        });
-
-        document.getElementById("btnMaisMin").addEventListener("click", () => {
-          tempoMundo.minutos = (tempoMundo.minutos + 10) % 60;
-          atualizarRelogio();
-        });
-
-        document.getElementById("btnChuva").addEventListener("click", () => {
-          const overlay = document.getElementById("chuva-overlay");
-          overlay.style.display = overlay.style.display === "none" || overlay.style.display === "" ? "block" : "none";
-        });
-
-        document.getElementById("btnAddMarcador").addEventListener("click", () => {
-          const marcadoresLayer = document.getElementById("marcadores-layer");
-          const marcador = document.createElement("div");
-          marcador.style.position = "absolute";
-          marcador.style.top = "50%";
-          marcador.style.left = "50%";
-          marcador.style.width = "10px";
-          marcador.style.height = "10px";
-          marcador.style.backgroundColor = document.getElementById("seletorCor").value;
-          marcador.style.borderRadius = "50%";
-          marcador.style.transform = "translate(-50%, -50%)";
-          marcadoresLayer.appendChild(marcador);
-        });
-
-        // Reativar botão de personagem
-        document.getElementById("btnPersonagem").addEventListener("click", () => {
-          alert("Botão de personagem clicado!");
-        });
-      </script>
-  </body>
+</body>
 </html>
