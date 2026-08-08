@@ -49,24 +49,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (chuvaAtiva) {
 
       if (horas >= 5 && horas <= 17) {
-        novoMapa = "mapa_dia_chuva.jpeg";
+        novoMapa = "chuva_dia_novo.jpeg";
       } else {
-        novoMapa = "mapa_noite_chuva.jpeg";
+        novoMapa = "chuva_noite_novo.jpeg";
       }
 
     } else {
 
       if (horas >= 5 && horas <= 8) {
-        novoMapa = "mapa_manha.jpeg";
+        novoMapa = "mapa_manha_novo.jpeg";
       }
       else if (horas >= 9 && horas <= 12) {
-        novoMapa = "mapa_dia.jpeg";
+        novoMapa = "mapa_dia_novo.jpeg";
       }
       else if (horas >= 13 && horas <= 17) {
-        novoMapa = "mapa_tarde.jpeg";
+        novoMapa = "mapa_tarde_novo.jpeg";
       }
       else {
-        novoMapa = "mapa_noite.jpeg";
+        novoMapa = "mapa_noite_novo.jpeg";
       }
 
     }
